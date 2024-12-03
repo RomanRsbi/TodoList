@@ -1,13 +1,13 @@
-import React from 'react';
+import React from 'react'
 import PropTypes from 'prop-types';
 
-import TaskFilter from '../TaskFilter/TaskFilter'
+import TaskFilter from '../TaskFilter/TaskFilter';
 import './Footer.css';
 
 export default function Footer({ buttonType = 'All', checkBtnType = () => {}, deleteAll = () => {}, activeCount = 0 }) {
   let countInfo = '';
   if (activeCount === 0) {
-    countInfo += 'no active task'
+    countInfo += 'no active task';
   }
   if (activeCount !== 0) {
     countInfo += `${activeCount} items left`;
