@@ -7,9 +7,7 @@ import './app.css';
 
 export default class App extends Component {
   countId = 10;
-  
 
-  
   state = {
     todoData: [],
     buttonType: 'All',

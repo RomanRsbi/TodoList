@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { formatDistance } from 'date-fns';
 import PropTypes from 'prop-types';
 
-import './Task.css'
-
+import './Task.css';
 
 export default class Task extends Component {
   state = {
