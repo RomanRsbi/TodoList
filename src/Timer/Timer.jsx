@@ -20,6 +20,7 @@ export default class Timer extends Component {
   }
 
   oneTick = () => {
+    if (this.state.seconds === 0) return;
     this.setState(prevState => {
       return {
         seconds: prevState.seconds - 1,
@@ -49,7 +50,7 @@ export default class Timer extends Component {
       <span className="description">
         <button className="icon icon-play" onClick={this.startTimer}></button>
         <button className="icon icon-pause" onClick={this.stopTimer}></button>
-        {this.toTime(this.state.seconds)}
+        {this.state.seconds === 0 ? 'Time is up' : this.toTime(this.state.seconds)}
       </span>
     );
   }
