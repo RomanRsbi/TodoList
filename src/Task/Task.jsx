@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { formatDistance } from 'date-fns';
 import PropTypes from 'prop-types';
 
+import Timer from '../Timer/Timer';
 import './Task.css';
 
 export default class Task extends Component {
@@ -45,7 +46,7 @@ export default class Task extends Component {
   }, 5000);
 
   render() {
-    const { label, className, completed, id, createTime, deleteTask, checkCompleted, editTask } = this.props;
+    const { label, className, completed, id, createTime, deleteTask, checkCompleted, editTask, min, sec } = this.props;
 
     let classNames = className;
 
@@ -60,8 +61,9 @@ export default class Task extends Component {
         <div className="view">
           <input className="toggle" type="checkbox" onClick={() => checkCompleted(id)} />
           <label>
-            <span className="description">{label}</span>
-            <span className="created">
+            <span className="title">{label}</span>
+            <Timer min={min} sec={sec} />
+            <span className="description">
               create{' '}
               {formatDistance(createTime, this.state.date, {
                 includeSeconds: true,

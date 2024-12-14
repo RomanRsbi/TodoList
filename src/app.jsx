@@ -48,13 +48,15 @@ export default class App extends Component {
     }));
   };
 
-  createTask(label) {
+  createTask(label, min, sec) {
     return {
       label,
       className: null,
       completed: false,
       id: this.countId++,
       createTime: new Date(),
+      min,
+      sec,
     };
   }
 
@@ -80,9 +82,9 @@ export default class App extends Component {
     });
   };
 
-  addTask = label => {
+  addTask = (label, min, sec) => {
     this.setState(({ todoData }) => {
-      const newEl = this.createTask(label);
+      const newEl = this.createTask(label, min, sec);
       const newArr = [...todoData, newEl];
       return {
         todoData: newArr,
