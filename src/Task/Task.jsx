@@ -7,7 +7,10 @@ import './Task.css';
 
 export default class Task extends Component {
   state = {
-    label: '',
+    label: this.props.label,
+    min: Number(this.props.min),
+    sec: Number(this.props.sec),
+    countTime: Number(this.props.sec) + Number(this.props.min) * 60,
     date: new Date(),
   };
 
@@ -16,6 +19,7 @@ export default class Task extends Component {
     deleteTask: () => {},
     editTask: () => {},
     editAdd: () => {},
+    clickOnEscape: () => {},
   };
 
   static propTypes = {
@@ -25,17 +29,43 @@ export default class Task extends Component {
     editAdd: PropTypes.func,
   };
 
+  nullFirst(t) {
+    if (t.toString().length === 1) return '0' + t;
+    return t.toString();
+  }
+
+  toTime(sec) {
+    return this.nullFirst(Math.trunc(sec / 60)) + ':' + this.nullFirst(sec % 60);
+  }
+
+  clickOnPen = () => {
+    this.props.editTask();
+    this.setState(({ min, sec }) => {
+      return {
+        min: this.nullFirst(Math.trunc((Number(sec) + Number(min) * 60) / 60)),
+        sec: this.nullFirst((Number(sec) + Number(min) * 60) % 60),
+      };
+    });
+  };
+
   changeInput = e => {
-    this.setState({
-      label: e.target.value,
+    this.setState(() => {
+      return { [e.target.id]: e.target.value };
     });
   };
 
   editSubmit = event => {
-    if (event.key === 'Enter') {
-      if (this.state.label !== '') {
-        this.props.editAdd(this.state.label);
-      }
+    event.preventDefault();
+    if (
+      this.state.label !== '' &&
+      this.state.min !== '' &&
+      this.state.sec !== '' &&
+      /^[0-9]*$/.test(this.state.min) &&
+      /^[0-9]*$/.test(this.state.sec)
+    ) {
+      this.props.editAdd(this.state.label, this.state.min, this.state.sec);
+    } else {
+      alert(Error('Incorrect data entered'));
     }
   };
 
@@ -45,8 +75,16 @@ export default class Task extends Component {
     }));
   }, 5000);
 
+  componentDidUpdate(prevProps) {
+    if (prevProps.min !== this.props.min || prevProps.sec !== this.props.sec) {
+      this.setState({
+        countTime: Number(this.props.sec) + Number(this.props.min) * 60,
+      });
+    }
+  }
+
   render() {
-    const { label, className, completed, id, createTime, deleteTask, checkCompleted, editTask, min, sec } = this.props;
+    const { label, className, completed, id, createTime, deleteTask, checkCompleted, min, sec } = this.props;
 
     let classNames = className;
 
@@ -71,16 +109,27 @@ export default class Task extends Component {
               })}
             </span>
           </label>
-          <button className="icon icon-edit" onClick={editTask}></button>
+          <button className="icon icon-edit" onClick={this.clickOnPen}></button>
           <button className="icon icon-destroy" onClick={deleteTask}></button>
         </div>
-        <input
-          type="text"
-          className="edit"
-          defaultValue={label}
-          onKeyDown={this.editSubmit}
-          onChange={this.changeInput}
-        />
+        <form className="new-todo-form" onSubmit={this.editSubmit}>
+          <input id="label" type="text" className="edit" defaultValue={label} onChange={this.changeInput} />
+          <input
+            id="min"
+            type="text"
+            className="edit edit-input-timer"
+            value={this.state.min}
+            onChange={this.changeInput}
+          />
+          <input
+            id="sec"
+            type="text"
+            className="edit edit-input-timer"
+            value={this.state.sec}
+            onChange={this.changeInput}
+          />
+          <button type="submit"></button>
+        </form>
       </li>
     );
   }

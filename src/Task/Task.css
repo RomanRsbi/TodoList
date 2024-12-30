@@ -29,3 +29,8 @@
 .toggle-all:checked + label:before {
   color: #737373;
 }
+
+.edit-input-timer {
+  margin: 0 !important;
+  width: 85px !important;
+}

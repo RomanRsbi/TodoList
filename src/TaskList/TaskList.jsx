@@ -10,6 +10,7 @@ export default function TaskList({
   deleteTask = () => {},
   editTask = () => {},
   editAdd = () => {},
+  clickOnEscape = () => {},
 }) {
   const el = todoData.map(item => (
     <Task
@@ -18,7 +19,8 @@ export default function TaskList({
       checkCompleted={checkCompleted}
       deleteTask={() => deleteTask(item.id)}
       editTask={() => editTask(item.id)}
-      editAdd={text => editAdd(text, item.id)}
+      clickOnEscape={() => clickOnEscape(item.id)}
+      editAdd={(text, min, sec) => editAdd(text, min, sec, item.id)}
     />
   ));
 
@@ -30,12 +32,15 @@ Task.propTypes = {
   deleteTask: PropTypes.func,
   editTask: PropTypes.func,
   editAdd: PropTypes.func,
+  clickOnEscape: PropTypes.func,
   todoData: PropTypes.arrayOf(
     PropTypes.shape({
       label: PropTypes.string,
       completed: PropTypes.bool,
       id: PropTypes.number,
       createTime: PropTypes.instanceOf(Date),
+      min: PropTypes.number,
+      sec: PropTypes.number,
     })
   ),
 };

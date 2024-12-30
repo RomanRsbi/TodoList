@@ -111,10 +111,26 @@ export default class App extends Component {
     });
   };
 
-  editAdd = (text, id) => {
+  clickOnEscape = id => {
     this.setState(({ todoData }) => {
       const indx = todoData.findIndex(el => el.id === id);
-      const newArr = todoData.toSpliced(indx, 1, { ...todoData[indx], className: null, label: text });
+      const newArr = todoData.toSpliced(indx, 1, { ...todoData[indx], className: null });
+      return {
+        todoData: newArr,
+      };
+    });
+  };
+
+  editAdd = (text, min, sec, id) => {
+    this.setState(({ todoData }) => {
+      const indx = todoData.findIndex(el => el.id === id);
+      const newArr = todoData.toSpliced(indx, 1, {
+        ...todoData[indx],
+        className: null,
+        label: text,
+        min: min,
+        sec: sec,
+      });
       return {
         todoData: newArr,
       };
@@ -134,6 +150,7 @@ export default class App extends Component {
             deleteTask={this.deleteTask}
             editTask={this.editTask}
             editAdd={this.editAdd}
+            clickOnEscape={this.clickOnEscape}
           />
           <Footer
             buttonType={this.state.buttonType}
