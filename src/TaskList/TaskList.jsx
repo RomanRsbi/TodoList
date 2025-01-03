@@ -10,7 +10,6 @@ export default function TaskList({
   deleteTask = () => {},
   editTask = () => {},
   editAdd = () => {},
-  clickOnEscape = () => {},
 }) {
   const el = todoData.map(item => (
     <Task
@@ -19,7 +18,6 @@ export default function TaskList({
       checkCompleted={checkCompleted}
       deleteTask={() => deleteTask(item.id)}
       editTask={() => editTask(item.id)}
-      clickOnEscape={() => clickOnEscape(item.id)}
       editAdd={(text, min, sec) => editAdd(text, min, sec, item.id)}
     />
   ));

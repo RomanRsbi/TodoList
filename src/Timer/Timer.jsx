@@ -1,63 +1,55 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
 
-export default class Timer extends Component {
-  state = {
-    seconds: Number(this.props.sec) + Number(this.props.min) * 60,
-    isActive: false,
-  };
+export default function Timer({ min, sec }) {
+  const [seconds, setSeconds] = useState(Number(sec) + Number(min) * 60);
+  const [isActive, setIsActive] = useState(false);
 
-  interval = null;
-
-  nullFirst(t) {
+  function nullFirst(t) {
     if (t.toString().length === 1) return '0' + t;
     return t.toString();
   }
 
-  toTime(sec) {
-    return this.nullFirst(Math.trunc(sec / 60)) + ':' + this.nullFirst(sec % 60);
+  function toTime(s) {
+    return nullFirst(Math.trunc(s / 60)) + ':' + nullFirst(s % 60);
   }
 
-  oneTick = () => {
-    if (this.state.seconds === 0) return;
-    this.setState(prevState => {
-      return {
-        seconds: prevState.seconds - 1,
-      };
+  useEffect(() => {
+    setSeconds(seconds => {
+      seconds = Number(sec) + Number(min) * 60;
+      return seconds;
+    });
+  }, [min, sec]);
+
+  useEffect(() => {
+    let interval = null;
+    if (isActive) {
+      interval = setInterval(oneTick, 1000);
+    } else if (!isActive && seconds !== 0) {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [seconds, isActive]);
+
+  const oneTick = () => {
+    if (seconds === 0) return;
+    setSeconds(seconds => {
+      return seconds - 1;
     });
   };
 
-  startTimer = () => {
-    this.setState({ isActive: true });
-    if (!this.interval) {
-      this.interval = setInterval(this.oneTick, 1000);
-    }
+  const startTimer = () => {
+    setIsActive(true);
   };
 
-  stopTimer = () => {
-    this.setState({ isActive: false });
-    clearInterval(this.interval);
-    this.interval = null;
+  const stopTimer = () => {
+    setIsActive(false);
   };
 
-  componentDidUpdate(prevProps) {
-    if (prevProps.min !== this.props.min || prevProps.sec !== this.props.sec) {
-      this.setState({
-        seconds: Number(this.props.sec) + Number(this.props.min) * 60,
-      });
-    }
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.interval);
-  }
-
-  render() {
-    return (
-      <span className="description">
-        <button className="icon icon-play" onClick={this.startTimer}></button>
-        <button className="icon icon-pause" onClick={this.stopTimer}></button>
-        {this.state.seconds === 0 ? 'Time is up' : this.toTime(this.state.seconds)}
-      </span>
-    );
-  }
+  return (
+    <span className="description">
+      <button className="icon icon-play" onClick={startTimer}></button>
+      <button className="icon icon-pause" onClick={stopTimer}></button>
+      {seconds === 0 ? 'Time is up' : toTime(seconds)}
+    </span>
+  );
 }

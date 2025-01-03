@@ -1,128 +1,94 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 
 import NewTaskForm from './NewTaskForm/NewTaskForm';
 import TaskList from './TaskList/TaskList';
 import Footer from './Footer/Footer';
 import './app.css';
 
-export default class App extends Component {
-  countId = 10;
+export default function App() {
+  const [todoData, setTodoData] = useState([]);
+  const [countId, setCountId] = useState(10);
+  const [buttonType, setButtonType] = useState('All');
 
-  state = {
-    todoData: [],
-    buttonType: 'All',
-  };
-
-  filterTask = (text = 'All') => {
-    this.setState(({ todoData }) => {
-      const newArr = todoData.map(el => {
-        if (text === 'Active') {
-          if (el.completed === true) {
-            el.className = 'hidden';
-            return el;
-          }
-          el.className = null;
-          return el;
-        }
-        if (text === 'Completed') {
-          if (el.completed === false) {
-            el.className = 'hidden';
-            return el;
-          }
-          el.className = null;
+  const filterTask = (text = 'All') => {
+    const newArr = todoData.map(el => {
+      if (text === 'Active') {
+        if (el.completed === true) {
+          el.className = 'hidden';
           return el;
         }
         el.className = null;
         return el;
-      });
-      return {
-        todoData: newArr,
-      };
+      }
+      if (text === 'Completed') {
+        if (el.completed === false) {
+          el.className = 'hidden';
+          return el;
+        }
+        el.className = null;
+        return el;
+      }
+      el.className = null;
+      return el;
     });
+    setTodoData(newArr);
   };
 
-  checkBtnType = text => {
-    this.filterTask(text);
-    this.setState(() => ({
-      buttonType: text,
-    }));
+  const checkBtnType = text => {
+    filterTask(text);
+    setButtonType(text);
   };
 
-  createTask(label, min, sec) {
+  function createTask(label, min, sec) {
+    setCountId(countId => {
+      return countId + 1;
+    });
     return {
       label,
       className: null,
       completed: false,
-      id: this.countId++,
+      id: countId,
       createTime: new Date(),
       min,
       sec,
     };
   }
 
-  checkCompleted = id => {
-    this.setState(({ todoData }) => {
-      const indx = todoData.findIndex(el => el.id === id);
-      const newArr = todoData.toSpliced(indx, 1, {
-        ...todoData[indx],
-        completed: !todoData[indx].completed,
-      });
-      return {
-        todoData: newArr,
-      };
+  const checkCompleted = id => {
+    const indx = todoData.findIndex(el => el.id === id);
+    const newArr = todoData.toSpliced(indx, 1, {
+      ...todoData[indx],
+      completed: !todoData[indx].completed,
     });
+    setTodoData(newArr);
   };
 
-  deleteTask = id => {
-    this.setState(({ todoData }) => {
-      const newArr = todoData.filter(el => el.id !== id);
-      return {
-        todoData: newArr,
-      };
-    });
+  const deleteTask = id => {
+    const newArr = todoData.filter(el => el.id !== id);
+    setTodoData(newArr);
   };
 
-  addTask = (label, min, sec) => {
-    this.setState(({ todoData }) => {
-      const newEl = this.createTask(label, min, sec);
+  const addTask = (label, min, sec) => {
+    setTodoData(todoData => {
+      const newEl = createTask(label, min, sec);
       const newArr = [...todoData, newEl];
-      return {
-        todoData: newArr,
-      };
+      return newArr;
     });
   };
 
-  deleteAll = () => {
-    this.setState(({ todoData }) => {
-      const newArr = todoData.filter(el => el.completed === false);
-      return {
-        todoData: newArr,
-      };
-    });
+  const deleteAll = () => {
+    const newArr = todoData.filter(el => el.completed === false);
+    setTodoData(newArr);
   };
 
-  editTask = id => {
-    this.setState(({ todoData }) => {
-      const indx = todoData.findIndex(el => el.id === id);
-      const newArr = todoData.toSpliced(indx, 1, { ...todoData[indx], className: 'editing' });
-      return {
-        todoData: newArr,
-      };
-    });
+  const editTask = id => {
+    const indx = todoData.findIndex(el => el.id === id);
+    const newArr = todoData.toSpliced(indx, 1, { ...todoData[indx], className: 'editing' });
+    setTodoData(newArr);
   };
 
-  clickOnEscape = id => {
-    this.setState(({ todoData }) => {
-      const indx = todoData.findIndex(el => el.id === id);
-      const newArr = todoData.toSpliced(indx, 1, { ...todoData[indx], className: null });
-      return {
-        todoData: newArr,
-      };
-    });
-  };
-
-  editAdd = (text, min, sec, id) => {
-    this.setState(({ todoData }) => {
+  const editAdd = (text, min, sec, id) => {
+    setTodoData(todoData => {
       const indx = todoData.findIndex(el => el.id === id);
       const newArr = todoData.toSpliced(indx, 1, {
         ...todoData[indx],
@@ -131,35 +97,25 @@ export default class App extends Component {
         min: min,
         sec: sec,
       });
-      return {
-        todoData: newArr,
-      };
+      return newArr;
     });
   };
 
-  render() {
-    const activeCount = this.state.todoData.filter(el => el.completed === false).length;
+  const activeCount = todoData.filter(el => el.completed === false).length;
 
-    return (
-      <section className="todoapp">
-        <NewTaskForm addTask={this.addTask} />
-        <section className="main">
-          <TaskList
-            todoData={this.state.todoData}
-            checkCompleted={this.checkCompleted}
-            deleteTask={this.deleteTask}
-            editTask={this.editTask}
-            editAdd={this.editAdd}
-            clickOnEscape={this.clickOnEscape}
-          />
-          <Footer
-            buttonType={this.state.buttonType}
-            checkBtnType={this.checkBtnType}
-            deleteAll={this.deleteAll}
-            activeCount={activeCount}
-          />
-        </section>
+  return (
+    <section className="todoapp">
+      <NewTaskForm addTask={addTask} />
+      <section className="main">
+        <TaskList
+          todoData={todoData}
+          checkCompleted={checkCompleted}
+          deleteTask={deleteTask}
+          editTask={editTask}
+          editAdd={editAdd}
+        />
+        <Footer buttonType={buttonType} checkBtnType={checkBtnType} deleteAll={deleteAll} activeCount={activeCount} />
       </section>
-    );
-  }
+    </section>
+  );
 }
